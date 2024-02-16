@@ -7,15 +7,17 @@ const notificationsDiv = document.getElementById("notifications");
 const wsUrl = "wss://socketsbay.com/wss/v2/1/demo/";
 let socket;
 
+// Function to display notifications
 const displayNotification = (message) => {
-	const notificationElement = document.createElement("div");
+  const notificationElement = document.createElement("div");
   notificationElement.classList.add("notification");
   notificationElement.textContent = message;
   notificationsDiv.appendChild(notificationElement);
 };
 
+// Function to connect to WebSocket server
 const connectWebSocket = () => {
-	statusDiv.textContent = "Connecting...";
+  statusDiv.textContent = "Connecting...";
   socket = new WebSocket(wsUrl);
 
   socket.onopen = () => {
@@ -28,7 +30,7 @@ const connectWebSocket = () => {
   socket.onmessage = (event) => {
     const message = event.data;
     displayNotification(message);
-	  };
+  };
 
   socket.onclose = () => {
     statusDiv.textContent = "Disconnected";

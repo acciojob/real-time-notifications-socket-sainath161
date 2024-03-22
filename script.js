@@ -15,25 +15,6 @@ const displayNotification = (message) => {
   notificationsDiv.appendChild(notificationElement);
 };
 
-// Function to handle WebSocket errors
-const handleWebSocketError = (error) => {
-  console.error("WebSocket error:", error);
-  displayNotification("WebSocket error. Please check console for details.");
-};
-
-// Function to handle disconnect
-const handleDisconnect = () => {
-  statusDiv.textContent = "Disconnected";
-  messageInput.disabled = true;
-  sendButton.disabled = true;
-  disconnectButton.disabled = true;
-};
-
-// Function to reconnect after 10 seconds
-const reconnectWebSocket = () => {
-  setTimeout(connectWebSocket, 10000);
-};
-
 // Function to connect to WebSocket server
 const connectWebSocket = () => {
   statusDiv.textContent = "Connecting...";
@@ -51,14 +32,19 @@ const connectWebSocket = () => {
     displayNotification(message);
   };
 
-  socket.onerror = handleWebSocketError;
-
   socket.onclose = () => {
-    handleDisconnect();
-    // Clear notifications on reconnection
-    notificationsDiv.innerHTML = "";
+    statusDiv.textContent = "Disconnected";
+    messageInput.disabled = true;
+    sendButton.disabled = true;
+    disconnectButton.disabled = true;
+    notificationsDiv.innerHTML = ""; // Clear previous notifications
     // Reconnect after 10 seconds
-    reconnectWebSocket();
+    setTimeout(connectWebSocket, 10000);
+  };
+
+  socket.onerror = (error) => {
+    statusDiv.textContent = "Error occurred";
+    console.error("WebSocket error:", error);
   };
 };
 
@@ -68,6 +54,9 @@ const sendMessage = () => {
   if (message !== "") {
     socket.send(message);
     messageInput.value = "";
+  } else {
+    // Provide feedback if message is empty
+    alert("Please enter a message.");
   }
 };
 
